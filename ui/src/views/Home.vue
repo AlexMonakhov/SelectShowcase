@@ -1,18 +1,24 @@
 <template>
   <div class="home">
     <!-- easy set initial value -->
-    <model-select class="input" v-model="selectedModel" :items="options"></model-select>
+    <!-- <model-select class="input" v-model="selectedModel" :items="options"></model-select>
+    <model-select class="input" v-model="selectedModel" :items="options"></model-select> -->
     <!-- impossible set initial value -->
-    <event-select class="input" :items="options" @change:options="onChange"></event-select> 
+    <!-- <event-select class="input" :items="options" @change:options="onChange"></event-select>  -->
     <!-- change of selected value from parent component immediately changes value in input -->
-    <vuex-select class="input" :items="options"></vuex-select>
-    <div class="buttons">
-      <div class="button" @click="selectModelPluto"> select model pluto </div>
-      <div class="button" @click="selectVuexPluto"> select vuex pluto </div>   
-    </div>  
-    <div> SelectedModel : {{ selectedModel }}</div>
-    <div> SelectedEvent : {{ selectedEvent }}</div>
-    <div> SelectedVuex : {{ selectedVuex }}</div>
+    <!-- <event-select class="input" :items="options" @change:options="onChange"></event-select>  -->
+    <!-- change of selected value from parent component immediately changes value in input -->
+      
+    <tooltip message="hello there">
+      <span>HOVER OVER</span>
+    </tooltip>
+    <tooltip message="hello there">
+      <span>HOVER OVER</span>
+      <template #content>
+        <div><model-select class="input" v-model="selectedModel" :items="options"></model-select></div>
+      </template>
+    </tooltip>
+
   </div>
 </template>
 
@@ -22,13 +28,16 @@ import { namespace } from 'vuex-class';
 import ModelSelect from "@/components/ModelSelect.vue";
 import EventSelect from "@/components/EventSelect.vue";
 import VuexSelect from "@/components/VuexSelect.vue";
+import Tooltip from "@/components/Tooltip.vue";
+import axios from 'axios';
 const SelectStore = namespace('SelectStore');
 
 @Component({
   components: {
     ModelSelect,
     EventSelect,
-    VuexSelect
+    VuexSelect,
+    Tooltip
   },
 })
 export default class Home extends Vue {
@@ -38,7 +47,21 @@ export default class Home extends Vue {
   selectedModel = "";
   selectedEvent = "";
   components: any[] = [];
-  created() : void{
+  file: File = null;
+ 
+
+  changed(event: any){
+    this.file = event.target.files[0];
+    this.submit();
+  }
+
+  async submit(){
+    var formData = new FormData();
+    formData.append("file", this.file);
+    await axios.post('https://localhost:44310/weatherforecast', formData);  
+  }
+
+   created() : void{
     this.options = ["peepo","pluto","marko"];
     this.selectedModel = this.getSelected();
     
